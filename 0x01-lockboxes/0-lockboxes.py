@@ -9,11 +9,11 @@ def canUnlockAll(boxes):
     if not boxes:
         return False
 
-    # Create a list to keep track of visited boxes
+    # Create a list that keep track of visited boxes
     visited = [False] * len(boxes)
     visited[0] = True
 
-    # Create a stack to store boxes to be visited
+    # Create a stack that stores boxes to be visited
     stack = [0]
 
     # Perform depth-first search to visit all boxes
