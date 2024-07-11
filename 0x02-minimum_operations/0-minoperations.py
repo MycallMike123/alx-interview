@@ -14,7 +14,7 @@ def minOperations(n):
     """
     str = 'H'  # Xter to be formed
     operations = 0
-    factor = 2# Initialize factor
+    factor = 2  # Initialize factor
 
     if n < 0:
         return 0  # Return 0 if n is negative
