@@ -1,72 +1,67 @@
 #!/usr/bin/python3
-
-"""
-Python script that reads stdin line by line and computes metrics:
-  - Input format:
-    <IP Address> - [<date>] "GET /projects/260 HTTP/1.1"
-    <status code> <file size>
-  - After every 10 lines and/or a keyboard interruption (CTRL + C),
-  print these statistics from the beginning:
-    - Total file size: File size for all previous lines
-    - Status codes: Status codes from all previous lines in ascending order
-"""
-
 import sys
+import signal
 
-
-def print_statistics(total_file_size, status_codes):
-    """
-    Print metrics including total file size and status code counts
-    """
-
-    print("File size: {}".format(total_file_size))
-    for code, count in sorted(status_codes.items()):
-        if count > 0:
-            print("{}: {}".format(code, count))
-
-
-def parse_line(line):
-    """Parse a line and extract file size and status code"""
-
-    parts = line.split()
-    # check if parts matches the expected format
-    if len(parts) >= 7:
-        file_size_str = parts[-1]
-        code_str = parts[-2]
-        # check if the status code(code_str) is in the allowed list
-        if code_str in status_code:
-            try:
-                file_size = int(file_size_str)
-                return file_size, code_str
-            except ValueError:
-                return None, None
-    return None, None
-
-
-# initialize variables to store metrics
-total_file_size = 0
-status_codes = {"200": 0, "301": 0, "400": 0,
-                "401": 0, "403": 0, "404": 0, "405": 0, "500": 0}
+# Global variables to store total file size and status code counts
+total_size = 0
+status_code_counts = {
+    200: 0,
+    301: 0,
+    400: 0,
+    401: 0,
+    403: 0,
+    404: 0,
+    405: 0,
+    500: 0
+}
 line_count = 0
 
-try:
-    for line in sys.stdin:
-        line_count += 1
-        file_size, code = parse_line(line)
+def print_statistics():
+    """Print the current statistics."""
+    global total_size, status_code_counts
+    print(f"File size: {total_size}")
+    for code in sorted(status_code_counts.keys()):
+        if status_code_counts[code] > 0:
+            print(f"{code}: {status_code_counts[code]}")
 
-        if file_size is not None and code in status_codes:
-            total_file_size += file_size
-            status_codes[code] += 1
-
-        if line_count % 10 == 0:
-            print_statistics(total_file_size, status_codes)
-            line_count = 0
-
-except KeyboardInterrupt:
-    # Handle keyboard interruption
-    print_statistics(total_file_size, status_codes)
+def signal_handler(sig, frame):
+    """Handle keyboard interruption signal (Ctrl + C)."""
+    print_statistics()
     sys.exit(0)
 
-finally:
-    # Ensure statistics are printed at the end of input
-    print_statistics(total_file_size, status_codes)
+# Register the signal handler for keyboard interruption (Ctrl + C)
+signal.signal(signal.SIGINT, signal_handler)
+
+# Read from standard input
+for line in sys.stdin:
+    try:
+        parts = line.split()
+        if len(parts) < 7:
+            continue
+
+        ip_address = parts[0]
+        date = parts[3][1:]
+        method = parts[5][1:]
+        endpoint = parts[6]
+        protocol = parts[7][:-1]
+        status_code = parts[8]
+        file_size = parts[9]
+
+        if method != "GET" or endpoint != "/projects/260" or protocol != "HTTP/1.1":
+            continue
+
+        status_code = int(status_code)
+        file_size = int(file_size)
+
+        total_size += file_size
+        if status_code in status_code_counts:
+            status_code_counts[status_code] += 1
+
+        line_count += 1
+        if line_count % 10 == 0:
+            print_statistics()
+
+    except Exception:
+        continue
+
+print_statistics()
