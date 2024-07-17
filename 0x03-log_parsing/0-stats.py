@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-""" Python script that reads stdin line by line and computes metrics:
+"""
+Python script that reads stdin line by line and computes metrics:
   - Input format:
     <IP Address> - [<date>] "GET /projects/260 HTTP/1.1"
     <status code> <file size>
@@ -15,8 +16,9 @@ import sys
 
 def print_statistics(total_file_size, status_codes):
     """
-    Print metrics including total file size and status code counts.
+    Print metrics including total file size and status code counts
     """
+
     print("File size: {}".format(total_file_size))
     for code, count in sorted(status_codes.items()):
         if count > 0:
@@ -24,29 +26,19 @@ def print_statistics(total_file_size, status_codes):
 
 
 def parse_line(line):
-    """
-    Parse a line and extract file size and status code.
-    Return file size and status code if the line matches the expected format,
-    otherwise return None.
-    Refactored this function to basically ensure that the status code is
-    compared directly to the allowed list of strings without automatically
-    casting it to an integer, thereby handling cases where the status code
-    is not an integer or is not in the allowed list.
-    """
-    parts = line.split()  # split line into components
+    """Parse a line and extract file size and status code"""
+
+    parts = line.split()
     # check if parts matches the expected format
     if len(parts) >= 7:
         file_size_str = parts[-1]
         code_str = parts[-2]
         # check if the status code(code_str) is in the allowed list
-        # of strings (status_codes)
-        if code_str in status_codes:
+        if code_str in status_code:
             try:
-                # convert file_size to integer or try to, lol
                 file_size = int(file_size_str)
                 return file_size, code_str
             except ValueError:
-                # Handle case where file size is not an integer
                 return None, None
     return None, None
 
@@ -58,9 +50,7 @@ status_codes = {"200": 0, "301": 0, "400": 0,
 line_count = 0
 
 try:
-    # loop over each line in stdin
     for line in sys.stdin:
-        # increment line count to track when to print statistics
         line_count += 1
         file_size, code = parse_line(line)
 
