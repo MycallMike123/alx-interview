@@ -26,7 +26,6 @@ def backtrack(r, n, cols, pos, neg, board):
                     res.append([i, k])
         # Print the coordinates of the queens
         print(res)
-        # Return the result
         return
 
     for c in range(n):
