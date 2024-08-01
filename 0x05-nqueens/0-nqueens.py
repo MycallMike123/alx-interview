@@ -19,18 +19,19 @@ def backtrack(r, n, cols, pos, neg, board):
         board (list): chess board
     """
     if r == n:
-        result = []
+        res = []
         for i in range(len(board)):
             for k in range(len(board[i])):
                 if board[i][k] == 1:
-                    result.append([i, k])
+                    res.append([i, k])
         # Print the coordinates of the queens
-        print(result)
+        print(res)
+        # Return the result
         return
 
     for c in range(n):
-        # Check if the column or positive diagonal
-        # or negative diagonal is occupied
+        # Check if the column or positive diagonal or
+        # negative diagonal is occupied
         if c in cols or (r + c) in pos or (r - c) in neg:
             continue
 
