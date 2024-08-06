@@ -1,0 +1,103 @@
+#!/usr/bin/node
+
+const request = require('request');
+
+if (process.argv.length < 3) {
+  console.log('Usage: ./0-starwars_characters.js <Movie.id>');
+  process.exit(1);
+}
+
+const movieId = process.argv[2];
+const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}`;
+
+// Function to retrieve data from a specified URL
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    request(url, (error, response, body) => {
+      if (error) {
+        reject(error); // Handle request errors
+      } else if (response.statusCode !== 200) {
+        reject(
+          new Error(`Request failed, status code: ${response.statusCode}`)
+        ); // Handle non-success HTTP status codes
+      } else {
+        resolve(JSON.parse(body)); // Parse and return the response body as JSON
+      }
+    });
+  });
+};
+
+// Retrieve movie details and then get character information
+fetchData(apiUrl)
+  .then((movieData) => {
+    const characterPromises = movieData.characters.map(
+      (characterUrl) => fetchData(characterUrl) // Create promises for each character URL
+    );
+    return Promise.all(characterPromises); // Wait for all character data to be retrieved
+  })
+  .then((characters) => {
+    characters.forEach((character) => {
+      console.log(character.name); // Output each character's name
+    });
+  })
+  .catch((error) => {
+    console.log('Error:', error.message); // Handle errors during the process
+  });
+The comments have been rephrased while retaining the original meaning.
+
+
+
+
+
+lets put the comments above the  code instead of being in line
+ChatGPT
+Here's the code with comments placed above the corresponding sections
+
+javascript
+Copy code
+#!/usr/bin/node
+
+const request = require('request');
+
+// Ensure the correct number of arguments is provided
+if (process.argv.length < 3) {
+  console.log('Usage: ./0-starwars_characters.js <Movie.id>');
+  process.exit(1);
+}
+
+const movieId = process.argv[2];
+const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}`;
+
+// Define a function to retrieve data from a given URL
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    request(url, (error, response, body) => {
+      if (error) {
+        reject(error); 
+      } else if (response.statusCode !== 200) {
+        reject(new Error(`Request failed, status code: ${response.statusCode}`));
+      } else {
+        resolve(JSON.parse(body)); 
+      }
+    });
+  });
+};
+
+// Fetch movie details and retrieve character data
+fetchData(apiUrl)
+  .then((movieData) => {
+    const characterPromises = movieData.characters.map(
+      (characterUrl) => fetchData(characterUrl)
+    );
+    return Promise.all(characterPromises);
+  })
+  .then((characters) => {
+    // Display each character's name
+    characters.forEach((character) => {
+      console.log(character.name);
+    });
+  })
+  .catch((error) => {
+    // Handle any errors encountered
+    console.log('Error:', error.message);
+  });
