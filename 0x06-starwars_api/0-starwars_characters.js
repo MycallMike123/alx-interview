@@ -34,13 +34,11 @@ fetchData(apiUrl)
     );
     return Promise.all(characterPromises);
   })
-  .then((characters) => {
-    // Display each character's name
+  .then((characters) => { // Display each character's name
     characters.forEach((character) => {
       console.log(character.name);
     });
   })
-  .catch((error) => {
-    // Handle any errors encountered
+  .catch((error) => { // Handle any errors encountered
     console.log('Error:', error.message);
   });
