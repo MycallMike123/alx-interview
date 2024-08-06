@@ -31,13 +31,13 @@ const fetchData = (url) => {
 fetchData(apiUrl)
   .then((movieData) => {
     const characterPromises = movieData.characters.map(
-      (characterUrl) => fetchData(characterUrl) // Create an array of promises to fetch character data
+      (characterUrl) => fetchData(characterUrl) // On each character create an array of promises to fetch
     );
     return Promise.all(characterPromises); // Wait for all promises to resolve
   })
   .then((characters) => {
     characters.forEach((character) => {
-      console.log(character.name); // Print the name of each character
+      console.log(character.name); // Print each character's name
     });
   })
   .catch((error) => {
